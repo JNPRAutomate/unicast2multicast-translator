@@ -128,3 +128,7 @@ optional arguments:
 ```
 Note that the default value for `--unicast-nif-ip` is determined dynamically so `python3 translator.py --help` will 
 report a different default value for this option on your machine.
+
+## Get Involved
+To get involved, contact Lenny Giuliano (lenny@juniper.net) or Andrew Gallo (agallo@gwu.edu) to be added to the MTTG
+Slack Group.
