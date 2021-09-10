@@ -1,0 +1,11 @@
+# Ignore .DS_Store files in all directories.
+**/.DS_Store
+
+# Ignore the entire .idea/ directory (contains PyCharm IDE configuration files) for now.
+# JetBrains recommends sharing parts of the ./idea directory, so this can be fine-tuned later on to include relevant ones.
+.idea/
+
+# Ignore the __pycache__ (sub) directory (ignore directories with this name at all levels of the file hierarchy).
+**/__pycache__
+
+**/.vscode
