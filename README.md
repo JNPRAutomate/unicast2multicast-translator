@@ -41,8 +41,29 @@ The code relies on the following third-party libraries:
 The default configuration should suffice for most use cases, so simply do:
 ```
 $ python3 translator.py
+Press enter to terminate the translator...
+read timeout: nothing to be translated this iteration
+read timeout: nothing to be translated this iteration
+...
+Multicast address (232.74.37.48, 9002) allocated for ('66.129.239.15', 31380).
+Added amt://162.250.138.11@232.74.37.48:9002 to the Multicast Menu (email=lenny@juniper.net; description=Translated stream originating from 66.129.239.15).
 ```
+Once the translator is running, you can terminate it by pressing enter. The translator will report a read timeout at
+periodic intervals (currently set to 5 seconds) as long as it is not receiving any unicast packets for translation.
+This is *not* an error, but rather an indication that the translator is alive and well and simply waiting for clients
+to start sending unicast streams for translation.
 
+Whenever a packet pertaining to a previously unseen unicast flow arrives (packets are mapped to flows using their source
+IP and source port), the translator will randomly pick a multicast address and reserve it for that new flow.
+This initial unicast packet, and any subsequent unicast packets pertaining to that same flow, will then be translated to
+multicast packets with a destination IP matching the multicast address that was reserved for the unicast flow.
+The translator will also add information about the new stream to the
+[Multicast Menu](https://multicastmenu.herokuapp.com).
+An example of what these entries will look like is provided in the screenshot below.
+
+![Listing of a translated stream on the Multicast Menu](doc/img/multicast_menu.png)
+
+### Command Line Interface
 A set of CLI options are available if you want to configure what IP address to listen for unicast flows on, what 
 multicast address space to randomly pick multicast addresses from (when assigning a multicast address to a new unicast
 flow) etc. 
