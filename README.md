@@ -51,10 +51,11 @@ Added amt://162.250.138.11@232.74.37.48:9002 to the Multicast Menu (email=lenny@
 Once the translator is running, you can terminate it by pressing enter. The translator will report a read timeout at
 periodic intervals (currently set to 5 seconds) as long as it is not receiving any unicast packets for translation.
 This is *not* an error, but rather an indication that the translator is alive and well and simply waiting for clients
-to start sending unicast streams for translation.
+to start sending unicast packets to the translator.
 
-Whenever a packet pertaining to a previously unseen unicast flow arrives (packets are mapped to flows using their source
-IP and source port), the translator will randomly pick a multicast address and reserve it for that new flow.
+Whenever a packet pertaining to a previously unseen unicast flow arrives (a packet is mapped to its respective flow 
+using its source IP and its source port), the translator will randomly pick a multicast address and reserve it for that
+new flow.
 This initial unicast packet, and any subsequent unicast packets pertaining to that same flow, will then be translated to
 multicast packets with a destination IP matching the multicast address that was reserved for the unicast flow.
 The translator will also add information about the new stream to the
