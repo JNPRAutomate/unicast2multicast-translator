@@ -29,6 +29,31 @@ The goal of this project is to develop a service that performs unicast-to-multic
 unicast-only sources to utilize the multicast capabilities of the (transit) multicast-enabled networks between the 
 source and its receivers.
 
+## Design
+The unicast-to-multicast translator uses a socket-based design.
+The translator maintains two sockets:
+
+1. a regular (UDP) unicast socket *S<sub>u</sub>* to which the unicast-only source sends its unicast traffic;
+2. and a multicast (UDP) socket *S<sub>m</sub>* on which the payload of the inbound unicast packets are sent out as 
+   multicast packets.
+
+Whenever a unicast packet *p* arrives at *S<sub>u</sub>*, the translator determines if it has already received prior
+packets from the same unicast source *s* by looking up *s* (identified by the source IP and source port of *p*) in a 
+dictionary *d* that maps unicast sources to their assigned multicast addresses (groups).
+If there is an entry for *s* in *d*, the translator simply sends the payload of *p* out on *S<sub>m</sub>*, specifying
+the multicast address pointed to by *s* in *d* as the destination IP address.
+If there is currently no entry for *s* in *d*, the reception of *p* indicates the start of a new unicast flow that is to
+be translated.
+In this case, the translator randomly selects a multicast address (group) *m* from its (configurable) multicast address
+space and inserts an entry in *d* that maps *s* to *m*.
+It then sends the payload of *p* out on *S<sub>m</sub>*, specifying *m* as the destination IP address.
+
+The primary benefit of this design is that all network and transport layer headers are automatically stripped (in the
+case of inbound traffic) and generated (in the case of outbound traffic) by the operating system's networking stack.
+Furthermore, since *S<sub>u</sub>* is a UDP socket, there is no need for multithreading as the main thread can serve
+multiple clients concurrently by constantly polling a single socket (*S<sub>u</sub>*) as all clients send data to this
+single socket (as opposed to TCP, where there is one socket per connection).
+
 ## Python Version
 The code is written in Python 3. We have successfully deployed the translator in our test environment using Python 
 v3.7.3.
