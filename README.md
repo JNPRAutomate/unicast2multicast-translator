@@ -44,7 +44,9 @@ $ python3 translator.py
 ```
 
 A set of CLI options are available if you want to configure what IP address to listen for unicast flows on, what 
-multicast address space to use when randomly picking a multicast address for the translated etc. Refer to the CLI help:
+multicast address space to randomly pick multicast addresses from (when assigning a multicast address to a new unicast
+flow) etc. 
+Refer to the CLI help:
 ```
 $ python3 translator.py --help
 usage: translator.py [-h] [--unicast-nif-ip UNICAST_NIF_IP]
