@@ -1,6 +1,8 @@
 import argparse
 import concurrent.futures as cf
+from datetime import datetime, timedelta
 import ipaddress
+import json
 import random
 import socket
 import threading
@@ -16,7 +18,7 @@ class Translator:
     Translates unicast UDP to multicast UDP.
     """
 
-    def __init__(self, ucast_srv_ip, ucast_srv_port, mcast_addr_space, mcast_port, read_buffer_size=1514,
+    def __init__(self, ucast_srv_ip, ucast_srv_port, mcast_addr_space, mcast_port, mm_uid, read_buffer_size=1514,
                  read_timeout_s=5.0, mcast_ttl=32):
         """
         Create a new Translator instance.
@@ -29,6 +31,7 @@ class Translator:
         :param mcast_addr_space: Address space to pick multicast groups (IP addresses) from. Each unicast stream will be
         translated to a multicast group in this address space.
         :param mcast_port: Port number to use as the destination port when forwarding unicast flows as multicast flows.
+        :param mm_uid: UID to use when identifying the translator account on Multicast Menu.
         :param read_buffer_size: Size of the receive buffer (when receiving unicast packets).
         :param read_timeout_s: Timeout when reading from the unicast socket. A lower timeout will make a call to stop()
         more responsive, at the cost of more CPU cycles spent on busy waiting.
@@ -46,6 +49,7 @@ class Translator:
                      f'address, but no host addresses.'
             raise ValueError(errmsg)
         self._addr_space = mcast_addr_space
+        self._mm_uid = mm_uid
         # We'll use the same destination port number across all multicast groups.
         self._mcast_dst_port = mcast_port
         self._buffer_size = read_buffer_size
@@ -53,6 +57,12 @@ class Translator:
         self._mcast_ttl = mcast_ttl
         # The Translator's Forwarding Information Base: maps a src ip and src port to its respective multicast group.
         self._fib = dict()
+        # The Translator's Activity Tracking Base: tracks active streams
+        self._atb = dict()
+        # The Translator's Access Code Map: records the Multicast Menu access codes associated with each stream.
+        self._acm = dict()
+        # Translation loop counter
+        self._loop_counter = 0
         # Currently allocated multicast addresses (addresses that we are translating to for current clients).
         self._allocated_mcast_addrs = set()
         # For synchronizing access to properties that are used by multiple threads.
@@ -169,16 +179,19 @@ class Translator:
                         # No multicast address currently allocated for this client. Allocate one.
                         mcast_addr = self._alloc_mcast_addr(src_addr)
                         if mcast_addr is not None:
-                            # Publish the new stream on the Multicast Menu if we successfully allocated a multicast
-                            # address. We'll let a worker thread handle the communication with the multicast menu
-                            # s.t. the I/O does not block translation of any ongoing streams (i.e., it is important we
-                            # do not block the thread that runs the translation loop).
+                            # Publish the new stream on Multicast Menu if we successfully allocated a multicast
+                            # address and have a UID to communcate with Multicast Menu. We'll let a worker thread 
+                            # handle the communication with Multicast Menu s.t. the I/O does not block translation 
+                            # of any ongoing streams (i.e., it is important we do not block the thread that runs 
+                            # the translation loop).
                             desc = f'Translated stream originating from {src_addr[0]}'
-                            self._mcastmenu_threadpool.submit(self._add_to_multicast_menu, mcast_addr,
-                                                              constants.MULTICASTMENU_EMAIL, desc)
+                            if self._mm_uid is not None:
+                                self._mcastmenu_threadpool.submit(self._add_to_multicast_menu, mcast_addr, src_addr)
                     if mcast_addr is not None:
                         # Forward the payload to the multicast address allocated for this client.
                         self._mcast_sckt.sendto(payload, (str(mcast_addr), self._mcast_dst_port))
+                        # Update Activity Information Base
+                        self._atb[src_addr] = datetime.now()
                     else:
                         # mcast_addr will be None if we've run out of addresses.
                         # TODO silently discard the packet or communicate this to the client?
@@ -186,6 +199,12 @@ class Translator:
                 except socket.timeout:
                     # No data available to read during this iteration.
                     print('read timeout: nothing to be translated this iteration')
+                # Determine if any streams are newly inactive
+                if self._loop_counter == 30:
+                    self._mcastmenu_threadpool.submit(self._identify_inactive_streams)
+                    self._loop_counter = 0
+                # Increment the translation loop counter
+                self._loop_counter += 1
         finally:
             # Free all resources (close all sockets etc.)
             self._clean_up()
@@ -236,59 +255,82 @@ class Translator:
         finally:
             self._lock.release()
 
-    def _add_to_multicast_menu(self, mcast_dst_ip, email, description):
+    def _add_to_multicast_menu(self, mcast_dst_ip, src_ip):
         """
         Publish information about a new stream (that is now being translated) on the Multicast Menu by submitting the
         form at constants.MULTICASTMENU_ADD_URL.
 
         :param mcast_dst_ip: The multicast destination IP (multicast group) used for the new stream.
-        :param email: Contact email (currently a required field on the form, to be removed)
-        :param description: A description of the stream.
+        :param src_ip: The IP address that the content originated from
 
         :return: None
         """
         errmsg = f'Attempt to add amt://{self._mcast_src_ip}@{mcast_dst_ip}:{self._mcast_dst_port} to the Multicast ' \
-                 f'Menu failed (email={email}; description={description}): '
+                 f'Menu failed (source={src_ip}): '
         try:
-            # To create an entry for the stream in the Multicast Menu, we're going to programmatically submit the form
-            # at constants.MULTICASTMENU_ADD_URL since there is currently no API for the Multicast Menu. However, we
-            # cannot simply do a single, one-shot POST request to that URL as the Multicast Menu uses Django's CSRF
-            # protection. To get around this, we must first establish a session with the Multicast Menu and send a GET
-            # request to the form's webpage to get our hands on a CSRF protection token.
-            sess = requests.session()
-            resp_get = sess.get(constants.MULTICASTMENU_ADD_URL)
-            if resp_get.status_code != 200:
-                errmsg += f'GET resulted in status code {resp_get.status_code}. Response body:\n{resp_get.text}'
-                print(errmsg)
-                return
-            csrftoken = sess.cookies.get('csrftoken')
-            if csrftoken is None:
-                errmsg += 'no csrftoken found in session.'
-                print(errmsg)
-                return
-            # We can now submit the form using a POST request. In doing so, we must provide the CSRF protection token
-            # alongside the other form parameters (the form has a hidden input tag that contains the CSRF protection
-            # token) and as a cookie (but the requests module takes care of this part automatically because we're using
-            # a session). Also note that we must set the Referer header field (to the same URL we're submitting the form
-            # to) as otherwise we'll get rejected by the server.
-            form_params = {'csrfmiddlewaretoken': csrftoken, 'source': self._mcast_src_ip, 'group': str(mcast_dst_ip),
-                           'udp_port': str(self._mcast_dst_port), 'email': email, 'description': str(description),
-                           'Add': 'Add'}
-            header_fields = {'Referer': constants.MULTICASTMENU_ADD_URL}
-            resp_post = sess.post(constants.MULTICASTMENU_ADD_URL, data=form_params, headers=header_fields)
-            if resp_post.status_code != 200:
+            options = {
+                "unique_identifier": self._mm_uid,
+                "source": self._mcast_src_ip,
+                "group": str(mcast_dst_ip),
+            }
+
+            if str(src_ip) == constants.MULTICASTMENU_SENDER_IP:
+                options["inside_request"] = "1"
+
+            resp_post = requests.post(constants.MULTICASTMENU_ADD_URL, data=options)
+
+            if resp_post.status_code != 201:
                 errmsg += f'POST resulted in status code {resp_post.status_code}. Response body:\n{resp_post.text}'
                 print(errmsg)
                 return
+
+            access_code = json.loads(resp_post.text)["data"].split(" ")[-1]
+            self._acm[src_ip] = access_code
+
             msg = f'Added amt://{self._mcast_src_ip}@{mcast_dst_ip}:{self._mcast_dst_port} to the Multicast Menu ' \
-                  f'(email={email}; description={description}).'
+                  f'(source={src_ip}). The access code is {access_code}.'
             print(msg)
+
         except Exception as e:
             errmsg += f'encountered a {type(e)} with message "{e}".'
             print(errmsg)
 
-    # TODO add functionality that evicts addresses from the FIB when they've been inactive for a while.
+    def _identify_inactive_streams(self):
+        """
+        Loop through the streams in the FIB and determine which have not been seen in a while.
+        """
+        try:
+            self._lock.acquire()
+            to_remove_from_fib = []
 
+            time = datetime.now()
+            for src_addr in self._fib:
+                if time - self._atb[src_addr] > timedelta(seconds=20):
+                    # Remove this stream from the FIB
+                    self._allocated_mcast_addrs.remove(self._fib[src_addr])
+
+                    if self._mm_uid is not None:
+                        # Remove the Multicast Menu entry for this stream
+                        options = {
+                            "unique_identifier": self._mm_uid,
+                            "access_code": self._acm[src_addr],
+                        }
+
+                        resp_post = requests.post(constants.MULTICASTMENU_REMOVE_URL, data=options)
+
+                        if resp_post.status_code != 201:
+                            errmsg += f'POST resulted in status code {resp_post.status_code}. Response body:\n{resp_post.text}'
+                            print(errmsg)
+                    
+                    # Clean up dictionaries
+                    to_remove_from_fib.append(src_addr)
+                    del self._atb[src_addr]
+                    del self._acm[src_addr]
+
+            for src_addr in to_remove_from_fib:
+                del self._fib[src_addr]
+        finally:
+            self._lock.release()
 
 if __name__ == '__main__':
     desc = 'Start a unicast-to-multicast translation service on this machine.'
@@ -317,15 +359,20 @@ if __name__ == '__main__':
         'multicast IP address (group). Default: %(default)d'
     ap.add_argument(f'--{mcast_port_argnmame}', type=int, default=constants.DEFAULT_MULTICAST_PORT, help=h)
 
+    mm_uid = 'multicastmenu-uid'
+    h = 'UID to use when identifying the translator account on Multicast Menu. Default: %(default)d'
+    ap.add_argument(f'--{mm_uid}', type=str, default=None, help=h)
+
     args = ap.parse_args()
     ucast_ip = getattr(args, utils.argname_to_attr(ucast_nif_ip_argname))
     ucast_port = getattr(args, utils.argname_to_attr(ucast_port_argname))
     mcast_addr_space = getattr(args, utils.argname_to_attr(mcast_addr_space_argname))
     mcast_port = getattr(args, utils.argname_to_attr(mcast_port_argnmame))
+    mm_uid = getattr(args, utils.argname_to_attr(mm_uid))
 
     # Fire up the translator.
     t = Translator(ucast_srv_ip=ucast_ip, ucast_srv_port=ucast_port, mcast_addr_space=mcast_addr_space,
-                   mcast_port=mcast_port)
+                   mcast_port=mcast_port, mm_uid=mm_uid)
     t.start()
     input('Press enter to terminate the translator...\n')
     t.terminate(blocking=True)
