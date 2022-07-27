@@ -274,7 +274,8 @@ class Translator:
                 "group": str(mcast_dst_ip),
             }
 
-            if str(src_ip) == constants.MULTICASTMENU_SENDER_IP:
+            if src_ip[0] == constants.MULTICASTMENU_SENDER_IP:
+                print("'Inside Request' set to True")
                 options["inside_request"] = "1"
 
             resp_post = requests.post(constants.MULTICASTMENU_ADD_URL, data=options)
