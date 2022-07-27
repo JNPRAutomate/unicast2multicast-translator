@@ -65,13 +65,13 @@ The code relies on the following third-party libraries:
 ## Usage
 The default configuration should suffice for most use cases, so simply do:
 ```
-$ python3 translator.py
+$ python3 translator.py --mm-uid SAMPLE_MM_UID
 Press enter to terminate the translator...
 read timeout: nothing to be translated this iteration
 read timeout: nothing to be translated this iteration
 ...
 Multicast address (232.74.37.48, 9002) allocated for ('66.129.239.15', 31380).
-Added amt://162.250.138.11@232.74.37.48:9002 to the Multicast Menu (email=lenny@juniper.net; description=Translated stream originating from 66.129.239.15).
+Added amt://162.250.138.11@232.74.37.48:9002 to the Multicast Menu (source=66.129.239.15). The access code is SAMPLE_ACCESS_CODE.
 ```
 Once the translator is running, you can terminate it by pressing enter. The translator will report a read timeout at
 periodic intervals (currently set to 5 seconds) as long as it is not receiving any unicast packets for translation.
@@ -84,7 +84,7 @@ new flow.
 This initial unicast packet, and any subsequent unicast packets pertaining to that same flow, will then be translated to
 multicast packets with a destination IP matching the multicast address that was reserved for the unicast flow.
 The translator will also add information about the new stream to the
-[Multicast Menu](https://multicastmenu.herokuapp.com).
+[Multicast Menu](https://menu.treedn.net).
 An example of what these entries will look like is provided in the screenshot below.
 
 ![Listing of a translated stream on the Multicast Menu](doc/img/multicast_menu.png)
@@ -100,6 +100,7 @@ usage: translator.py [-h] [--unicast-nif-ip UNICAST_NIF_IP]
                      [--unicast-port UNICAST_PORT]
                      [--multicast-addr-space MULTICAST_ADDR_SPACE]
                      [--multicast-port MULTICAST_PORT]
+                     [--mm_uid MULTICAST_MENU_UID]
 
 Start a unicast-to-multicast translation service on this machine.
 
@@ -125,6 +126,10 @@ optional arguments:
                         port number will be used for all translated flows.
                         Thus, a translated flow is identified solely by its
                         assigned multicast IP address (group). Default: 9002
+  --multicastmenu_uid MULTICAST_MENU_UID
+                        UID used to identify the translator to Multicast Menu
+                        when adding streams. If this is not set, the translator
+                        will not attempt to add streams to Multicast Menu.
 ```
 Note that the default value for `--unicast-nif-ip` is determined dynamically so `python3 translator.py --help` will 
 report a different default value for this option on your machine.
