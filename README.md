@@ -1,9 +1,8 @@
 # unicast2multicast-translator
 
 ## Background & Goal
-This project is part of a larger effort called 
-[Multicast to the Grandma](https://datatracker.ietf.org/meeting/104/materials/slides-104-mboned-mttg-01) (MTTG).
-Put briefly, the goal of MTTG is to bring applications that rely on multicast infrastructure to users in networks that 
+This project is part of a larger effort called [TreeDN](https://datatracker.ietf.org/doc/draft-ietf-mops-treedn/).
+The goal of TreeDN is to bring content that relies on multicast infrastructure to users in networks that 
 do not support multicast.
 The key idea is to automatically translate unicast traffic to multicast traffic as the traffic enters a 
 multicast-enabled network from a unicast-only network, and vice versa when the traffic enters a unicast-only network 
@@ -15,7 +14,7 @@ network, such that the traffic can travel across the unicast-only network and ul
 end host.
 
 While AMT allows for delivery of content originating from (and sent as multicast) a host in a multicast-enabled network
-(e.g., the [Multicast Backbone](https://en.wikipedia.org/wiki/Mbone) (Mbone)) to receivers in unicast-only networks, it
+(e.g., the [Multicast Backbone](https://en.wikipedia.org/wiki/Mbone) (MBONE)) to receivers in unicast-only networks, it
 does not provide unicast-to-multicast translation, as stated in the February 2015 revision of the
 [RFC](https://datatracker.ietf.org/doc/html/rfc7450#section-2):
 
