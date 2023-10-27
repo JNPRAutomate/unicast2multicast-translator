@@ -1,0 +1,14 @@
+[Unit]
+Description=Keeps track of u2mt menu IP for nftables output
+After=network.target
+Before=u2mt.service
+
+[Service]
+ExecStart=/srv/u2mt-nftables/u2mt-nftables.sh
+Type=simple
+StandardOutput=journal
+StandardError=journal
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,48 @@
+
+################## cat HOWTO.TXT in .bashrc ##################
+Translator service status:
+systemctl status u2mt
+
+Translator service logs:
+journalctl -u u2mt 
+
+Translator service security analytics:
+systemd-analyze security u2mt
+
+Edit translator systemd unit:
+vi /etc/systemd/system/u2mt.service
+
+Reload systemd upon unit change:
+systemctl daemon-reload
+
+Reload translator service:
+systemctl restart u2mt
+
+Translator nftables menu IP update service status:
+systemctl status u2mt-nftables
+
+Active firewall rules/counters:
+nft list ruleset
+
+Edit firewall rules:
+vi /etc/nftables.conf
+
+Check firewall rulebase syntax:
+nft -c -f /etc/nftables.conf && echo OK!
+
+Reload firewall rules:
+systemctl restart nftables
+
+Add/Remove element from blacklist/whitelist:
+nft add element inet filter STREAMING_BLACKLIST { 1.1.1.1 }
+nft delete element inet filter STREAMING_BLACKLIST { 1.1.1.1 }
+
+List/Flush blacklist/whitelist:
+nft list set inet filter STREAMING_BLACKLIST
+nft flush set inet filter STREAMING_BLACKLIST
+
+Listening sockets:
+ss -lutnp
+
+#############################################################
+

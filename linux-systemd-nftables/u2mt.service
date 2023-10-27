@@ -1,0 +1,46 @@
+[Unit]
+Description=Unicast to Multicast translator
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 -u /srv/u2mt/translator.py --unicast-port 9001 --multicastmenu-uid translator-new --unicast-nif-ip 0.0.0.0
+MemoryMax=1G
+TasksAccounting=yes
+TasksMax=1024
+User=u2mt
+Type=simple
+StandardOutput=journal
+StandardError=journal
+Restart=no
+
+PrivateUsers=yes
+NoExecPaths=/
+ExecPaths=/usr/bin /usr/lib
+UMask=0077
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+LockPersonality=yes
+RemoveIPC=yes
+CapabilityBoundingSet=
+SystemCallFilter=@system-service
+SystemCallArchitectures=native
+PrivateTmp=yes
+PrivateIPC=yes
+PrivateDevices=yes
+ProcSubset=pid
+ProtectProc=invisible
+ProtectClock=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target
