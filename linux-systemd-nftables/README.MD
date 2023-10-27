@@ -1,8 +1,9 @@
-# Translator Linux Hardening - Linux systemd, nftables
-Following is proposal how to harden Unicast To Multicast Translator, tested on Debian Linux 12
+# Translator as Linux service Hardening - Linux systemd, nftables
+Following is proposal how to harden Unicast To Multicast Translator running as a Linux service 
 - use systemd security features to vastly reduce privileges of translator systemd service 
 - use nftables Linux in-kernel firewall to harden host-OS and translator, allowing to block sources
 - nftables does collect possibly handy overall and per stream statistics (DOS/DDoS aspects)
+- tested on Debian Linux 12 
 
 # systemd 
 Create user for running unicast to multicast translator:
@@ -69,7 +70,59 @@ review logs:
 journalctl --unit u2mt-nftables
 ```
 
-# cheat sheet
+# Cheat sheet
 For quick hints how to deal with translator services and other related tasks, copy HOWTO.TXT to your ~ and feel free to put into .bashrc
 ```
 cat ~/HOWTO.TXT
+```
+
+HOWTO.TXT contents
+```
+################## cat HOWTO.TXT in .bashrc ##################
+Translator service status:
+systemctl status u2mt
+
+Translator service logs:
+journalctl -u u2mt 
+
+Translator service security analytics:
+systemd-analyze security u2mt
+
+Edit translator systemd unit:
+vi /etc/systemd/system/u2mt.service
+
+Reload systemd upon unit change:
+systemctl daemon-reload
+
+Reload translator service:
+systemctl restart u2mt
+
+Translator nftables menu IP update service status:
+systemctl status u2mt-nftables
+
+Active firewall rules/counters:
+nft list ruleset
+
+Edit firewall rules:
+vi /etc/nftables.conf
+
+Check firewall rulebase syntax:
+nft -c -f /etc/nftables.conf && echo OK!
+
+Reload firewall rules:
+systemctl restart nftables
+
+Add/Remove element from blacklist/whitelist:
+nft add element inet filter STREAMING_BLACKLIST { 1.1.1.1 }
+nft delete element inet filter STREAMING_BLACKLIST { 1.1.1.1 }
+
+List/Flush blacklist/whitelist:
+nft list set inet filter STREAMING_BLACKLIST
+nft flush set inet filter STREAMING_BLACKLIST
+
+Listening sockets:
+ss -lutnp
+
+#############################################################
+```
+
