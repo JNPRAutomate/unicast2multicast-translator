@@ -1,10 +1,10 @@
 # Translator as Linux service Hardening - Linux systemd, nftables
 Following is proposal how to harden Unicast To Multicast Translator running as a Linux service 
-- use systemd security features to vastly reduce privileges of translator systemd service 
-- use nftables Linux in-kernel firewall to harden host-OS and translator, allowing to block sources
+- systemd security features to vastly reduce privileges of translator systemd service 
+- nftables Linux in-kernel firewall to harden host-OS and translator, deny some streaming sources
 - nftables does collect possibly handy overall and per stream statistics (DOS/DDoS aspects)
-- tested on Debian Linux 12 
 
+Following has been tested and deployed on Debian 12
 # systemd 
 Create user for running unicast to multicast translator:
 ```
