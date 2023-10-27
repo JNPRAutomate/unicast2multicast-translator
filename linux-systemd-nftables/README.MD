@@ -31,14 +31,16 @@ Analyze security settings:
 ```
 systemd-analyze security u2mt
 ```
-Explanations of the settings can be found here: https://docs.arbitrary.ch/security/systemd.html
+Explanations of the systemd unit security settings can be found here: https://docs.arbitrary.ch/security/systemd.html
 
-# nftables
+# nftables Linux firewall
 Review sample nftables.conf:
 - adjust MGMT and MGMT6 sets with permitted SSH hosts
 - add system DNS resolver addresses to DNS set
 - add default IP of multicast menu to MENU set (hostname->IP will be looked after separate service)
 - has sets for blacklisting/whitelisting of certain streaming sources 
+
+WARNING - there is risk of management connection loss when nftables are configured incorectly! 
 
 Deploy nftables.conf to /etc/nftables.conf
 Check syntax:
