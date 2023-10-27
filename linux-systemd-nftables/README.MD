@@ -1,7 +1,8 @@
 # Translator Linux Hardening - Linux systemd, nftables
 Following is proposal how to harden Unicast To Multicast Translator, tested on Debian Linux 12 
-- use systemd features to limit exposure surface of translator code
-- use nftables Linux in-kernel firewall to harden host-OS  and translator
+- use systemd security features to vastly reduce privileges of translator service translator
+- use nftables Linux in-kernel firewall to harden host-OS and limit translator ingress/egress connections
+- nftables does collect possibly handy overall and per statistics of translator too
 
 # systemd 
 Create user for running unicast to multicast translator:
@@ -9,7 +10,7 @@ Create user for running unicast to multicast translator:
 useradd --system u2mt
 ```
 
-Deploy translator to /srv/u2mt directory, ownership and write only by root 
+Deploy translator to /srv/u2mt directory, ownership and write only by root all over the place 
 
 Copy u2mt.service to /etc/systemd/system/
 
@@ -52,7 +53,7 @@ nft list ruleset
 ```
 
 # nftables mutlicast menu IP update
-If there is a potential for multicast menu IP to change (e.g., cloud service), then small script can periodically resolve hostname of multicast menu in use by translator script (MULTICASTMENU_ADD_URL in /srv/u2mt/constants.py). In case of change the MENU nftables set is refreshed.
+If there is a potential for multicast menu IP to change (e.g., cloud service hosted menu), then small script executed as systemd service can periodically resolve hostname of multicast menu in use by translator script (MULTICASTMENU_ADD_URL in /srv/u2mt/constants.py). In case of change of host's IP address, the MENU nftables set is refreshed accordingly.
 
 deploy u2mt-nftables.service to /etc/systemd/system/
 deploy u2mt-nftables.sh to /srv/u2mt-nftables
@@ -63,7 +64,7 @@ systemctl start u2mt-nftables.service
 ```
 
 # cheat sheet
-For quick hints how to deal with translator services copy HOWTO.TXT to your ~ and feel free to put into .bashrc 
+For quick hints how to deal with translator services and other related tasks, copy HOWTO.TXT to your ~ and feel free to put into .bashrc 
 ```
 cat ~/HOWTO.TXT
 ```
