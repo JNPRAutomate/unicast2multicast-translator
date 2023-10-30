@@ -55,7 +55,7 @@ single socket (as opposed to TCP, where there is one socket per connection).
 
 ## Python Version
 The code is written in Python 3. We have successfully deployed the translator in our test environment using Python 
-v3.7.3.
+v3.7.3 and 3.11.2.
 
 ## Dependencies
 The code relies on the following third-party libraries:
@@ -65,14 +65,14 @@ The code relies on the following third-party libraries:
 The default configuration should suffice for most use cases, so simply do:
 ```
 $ python3 translator.py
-Press enter to terminate the translator...
+Press CTRL+C to stop translator
 read timeout: nothing to be translated this iteration
 read timeout: nothing to be translated this iteration
 ...
 Multicast address (232.74.37.48, 9002) allocated for ('66.129.239.15', 31380).
 Added amt://162.250.138.11@232.74.37.48:9002 to the Multicast Menu (email=lenny@juniper.net; description=Translated stream originating from 66.129.239.15).
 ```
-Once the translator is running, you can terminate it by pressing enter. The translator will report a read timeout at
+Once the translator is running, you can terminate it by pressing CTRL+C. The translator will report a read timeout at
 periodic intervals (currently set to 5 seconds) as long as it is not receiving any unicast packets for translation.
 This is *not* an error, but rather an indication that the translator is alive and well and simply waiting for clients
 to start sending unicast packets to the translator.
@@ -87,6 +87,8 @@ The translator will also add information about the new stream to the
 An example of what these entries will look like is provided in the screenshot below.
 
 ![Listing of a translated stream on the Multicast Menu](doc/img/multicast_menu.png)
+
+An example of running translator as a secured service is available [here](linux-systemd-nftables).
 
 ### Command Line Interface
 A set of CLI options are available if you want to configure what IP address to listen for unicast flows on, what 
