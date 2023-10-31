@@ -1,9 +1,12 @@
+#!/usr/bin/python3
 import argparse
 import concurrent.futures as cf
 import ipaddress
 import random
+import signal
 import socket
 import threading
+import time
 
 import requests
 
@@ -290,6 +293,17 @@ class Translator:
     # TODO add functionality that evicts addresses from the FIB when they've been inactive for a while.
 
 
+class GracefulKiller:
+    kill_now = False
+
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self):
+        self.kill_now = True
+
+
 if __name__ == '__main__':
     desc = 'Start a unicast-to-multicast translation service on this machine.'
     ap = argparse.ArgumentParser(description=desc)
@@ -327,5 +341,10 @@ if __name__ == '__main__':
     t = Translator(ucast_srv_ip=ucast_ip, ucast_srv_port=ucast_port, mcast_addr_space=mcast_addr_space,
                    mcast_port=mcast_port)
     t.start()
-    input('Press enter to terminate the translator...\n')
+
+    # Keep the translator alive until an interrupt or termination signal is received.
+    print('Press CTRL+C to stop the translator.')
+    killer = GracefulKiller()
+    while not killer.kill_now:
+        time.sleep(2)
     t.terminate(blocking=True)
