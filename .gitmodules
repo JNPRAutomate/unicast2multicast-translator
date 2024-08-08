@@ -1,3 +1,0 @@
-[submodule "pipernet"]
-    path = pipernet
-    url = https://github.com/JNPRAutomate/unicast2multicast-translator/pipernet.git
