@@ -1,0 +1,26 @@
+[
+    {
+        "title": "Stream 1",
+        "description": "This is the first stream",
+        "category": "Educational",
+        "status": "Trending"
+    },
+    {
+        "title": "Stream 2",
+        "description": "This is the second stream",
+        "category": "Nature",
+        "status": "Editor's Choice"
+    },
+    {
+        "title": "Stream 3",
+        "description": "Editor's choice stream",
+        "category": "Technology",
+        "status": "Editor's Choice"
+    },
+    {
+        "title": "Stream 4",
+        "description": "This is the fourth stream",
+        "category": "Music",
+        "status": "Trending"
+    }
+]
