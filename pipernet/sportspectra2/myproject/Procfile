@@ -1,3 +1,1 @@
-web: gunicorn myproject.wsgi --log-file -
-release: python myproject/manage.py migrate
-static: npm install -g http-server && http-server build/web/ -p $PORT
+web: gunicorn pipernet.sportspectra2.myproject.wsgi --log-file -
