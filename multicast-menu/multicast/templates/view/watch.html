@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block head %}
+<link href="https://vjs.zencdn.net/7.20.3/video-js.min.css" rel="stylesheet" />
+<style>
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 264px;
+        background-color: #000;
+        color: #fff;
+        font-size: 18px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="center-div">
+    <div id="loading-indicator" class="loading">
+        Loading stream... Please wait.
+    </div>
+    <video-js id="video-player" class="vjs-default-skin" controls preload="auto" width="640" height="360">
+        <source src="" type="application/x-mpegURL">
+    </video-js>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+
+    <script>
+        var player = videojs('video-player', {
+            html5: {
+                vhs: {
+                    overrideNative: true,
+                    enableLowInitialPlaylist: false,
+                    allowSeeksWithinUnsafeLiveWindow: true,
+                    handlePartialData: true,
+                    fastQualityChange: true,
+                    bandwidth: 5000000,
+                }
+            },
+            liveui: true,
+            liveTracker: {
+                trackingThreshold: 0
+            },
+            errorDisplay: false,
+            controls: true,
+            autoplay: false,
+            preload: 'auto',
+        });
+    
+        player.ready(function() {
+            player.tech().on('retryplaylist', function() {
+                console.log('Retrying to load playlist');
+            });
+    
+            player.on('error', function(e) {
+                console.error('Player error:', player.error());
+            });
+    
+            player.on('waiting', function() {
+                console.log('Player is waiting for data');
+            });
+    
+            player.on('loadedmetadata', function() {
+                console.log('Video metadata loaded');
+                console.log('Video dimensions:', player.videoWidth() + 'x' + player.videoHeight());
+            });
+    
+            player.on('playing', function() {
+                console.log('Video is playing');
+            });
+        });
+    
+        function checkStreamStatus() {
+            console.log('Checking stream status...');
+            fetch('{{ status_check_url }}')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Stream status:', data);
+                    if (data.status === 'ready') {
+                        console.log('Stream is ready. Watch file:', data.watch_file);
+                        document.getElementById('loading-indicator').style.display = 'none';
+                        document.getElementById('video-player').style.display = 'block';
+                        player.src({
+                            type: "application/x-mpegURL",
+                            src: data.watch_file + '?_=' + new Date().getTime()
+                        });
+                        player.play().catch(function(error) {
+                            console.error("Auto-play failed:", error);
+                        });
+                    } else {
+                        console.log('Stream not ready yet. Checking again in 5 seconds.');
+                        setTimeout(checkStreamStatus, 5000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking stream status:', error);
+                    setTimeout(checkStreamStatus, 5000);
+                });
+        }
+    
+        // Start checking the stream status
+        checkStreamStatus();
+    </script>
+</div>
+{% endblock %}

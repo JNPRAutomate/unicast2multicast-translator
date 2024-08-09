@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/view.css' %}">
+    <script>
+        function clear_reports(stream_id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'view:broken_clear' 1234 %}".replace(/1234/, stream_id),
+                success: function () {
+                    alert("Any reports for this stream have been cleared and it will again appear to users.");
+                },
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block main %}
+    <div style="max-width: 880px; margin: auto;">
+        <!-- Preview image -->
+        <div>
+            {% if stream.preview %}
+                <img class="responsive-image detail-padding" src={{ stream.preview.url }}>
+            {% endif %}
+        </div>
+        <!-- Title, organization, owner...-->
+        <div class="detail-margin">
+            <h1 style="font-size: 22px; font-weight: bold;">{{ stream.get_description }}</h1>
+            <h2 style="font-size: 14px;">Organization: {{ stream.source_name }}</h2>
+            <h2 style="font-size: 14px;">Owner: {{ stream.owner.username }}</h2>
+            <h2 style="font-size: 14px;">Source: {{ stream.source }}</h2>
+            <h2 style="font-size: 14px;">Group: {{ stream.group }}</h2>
+            {% if stream.udp_port %}
+                <h2 style="font-size: 14px;">UDP Port: {{ stream.udp_port }}</h2>
+            {% endif %}
+            {% if stream.amt_relay %}
+                <h2 style="font-size: 14px;">AMT Relay: {{ stream.amt_relay }}</h2>
+            {% endif %}
+        </div>
+        <!-- Open in VLC -->
+        <div class="detail-margin">
+            <a href="{% url 'view:open' stream.id %}">
+                <button type="button" class="btn detail-button detail-padding">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px; padding-bottom: 2px;" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                    </svg>
+                    Open in VLC
+                </button>
+            </a>
+        </div>
+        <div class="text-box">
+            <h6>This stream was collected through: {{ stream.collection_method }}</h6>
+            <h6>This stream was last collected at {{ stream.get_time_last_found }} UTC.</h6>
+            <h6>This stream has been reported as broken {{ stream.report_count }} times.</h6>
+        </div>
+        <!-- Mark Active -->
+        <div class="detail-margin">
+            <a><button type="button" class="btn detail-button detail-padding" onclick="clear_reports('{{ stream.id }}')">
+                <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px; padding-bottom: 2px;" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                    <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10H5zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+                </svg>
+                Mark Active
+            </button></a>
+        </div>
+        <!-- Delete Stream -->
+        <div class="detail-margin">
+            <form method="post">
+                {% csrf_token %}
+                <a><button type="submit" class="btn detail-button detail-padding">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px; padding-bottom: 2px;" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                    </svg>
+                    Delete Stream
+                </button></a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

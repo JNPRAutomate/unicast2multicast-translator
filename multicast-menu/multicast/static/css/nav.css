@@ -1,0 +1,16 @@
+.header {
+    background-color: #01785e;
+    color: #ffffff;
+}
+
+.header-link {
+    color: #ffffff !important;
+}
+
+.header-link:hover {
+    color: #dee3e2 !important;
+}
+
+.header-toggle {
+    color: #dee3e2;
+}

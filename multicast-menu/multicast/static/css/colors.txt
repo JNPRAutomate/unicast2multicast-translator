@@ -1,0 +1,6 @@
+Black: #212529
+Gray: #dee3e2
+Dark Green: #01785e
+Light Green: #01785ed5
+Red: #ac0202
+White: #ffffff

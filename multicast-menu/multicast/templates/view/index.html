@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/view.css' %}">
+
+    <script>
+        /**
+         * Add an event listener to the Document.
+         * When the content is loaded, check if the horizontal scroll position of the div with all categories
+         * (the div with the id categories_chooser) is saved in the sessionStorage.
+         * If the value is saved scroll the divider to this position and clear the value from the storage.
+         * That way the user will have the same categories in sight after a click on one of them.
+         */
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var scrollpos = sessionStorage.getItem('categories_scrollpos');
+            if (scrollpos) {
+                var categoriesChooser = document.getElementById("categories_chooser");
+                if(categoriesChooser) {
+                    categoriesChooser.scrollTo(scrollpos, 0);
+                }
+                sessionStorage.removeItem('categories_scrollpos');
+            }
+        });
+
+        /**
+         * Add an event listener to the window.
+         * The moment before the content is unloaded get the position of the div with all categories
+         * (the div with the id categories_chooser) and save it to the sessionStorage in order to
+         * reuse it when the document is loaded again.
+         */
+        window.addEventListener("beforeunload", function (e) {
+            var categoriesChooser = document.getElementById("categories_chooser");
+            if(categoriesChooser) {
+                sessionStorage.setItem('categories_scrollpos', categoriesChooser.scrollLeft);
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block main %}
+    <!-- Categories -->
+    <div id="categories_chooser" class="frame" style="overflow: auto; white-space: nowrap; padding: 18px; border: 1px solid rgba(0,0,0,0.1); font-size: 1rem;">
+        <span style="font-weight: bold;">Categories:</span>
+        <a href="{% url 'view:index' %}" style="color: inherit; text-decoration: none;">
+            <span class="{% if not active_category %} category-tag-selected {% else %} category-tag {% endif %}" style="padding: 0.5rem 0.5rem 0.5rem 0.7rem; margin: 0.3rem;">
+                All
+            </span>
+        </a>
+        {% for category in categories %}
+            <a href="{% url 'view:index' %}?category={{ category.slug }}" style="color: inherit; text-decoration: none;">
+                <span class="{% if category.slug == active_category %} category-tag-selected {% else %} category-tag {% endif %}" style="padding: 0.5rem 0.5rem 0.5rem 0.7rem; margin: 0.3rem;">
+                    {{ category.name }}
+                </span>
+            </a>
+        {% endfor %}
+    </div>
+    <!-- Main content -->
+    <div class="wrapper">
+        <!-- Mian content header -->
+        <div class="center-div" style="padding: 10px 0;">
+            {% if query %}
+                {% if page_obj.paginator.count == 0 %}
+                    <h5>No streams found for your search term "{{ query }}".</h5>
+                {% elif page_obj.paginator.count == 1 %}
+                    <h5>1 stream found for search term "{{ query }}".</h5>
+                {% else %}
+                    <h5>{{ page_obj.paginator.count }} streams found for search term "{{ query }}" (showing {{ page_obj.start_index }} to {{ page_obj.end_index }}).</h5>
+                {% endif %}
+            {% elif active_category %}
+                {% if page_obj.paginator.count == 0 %}
+                    <h5>No streams found in the selected category.</h5>
+                {% elif page_obj.paginator.count == 1 %}
+                    <h5>1 stream found in the selected category.</h5>
+                {% else %}
+                    <h5>{{ page_obj.paginator.count }} streams found in the selected category (showing {{ page_obj.start_index }} to {{ page_obj.end_index }}).</h5>
+                {% endif %}
+            {% else %}
+                {% if page_obj.paginator.count == 0 %}
+                    <h5>No streams are currently available on the platform.</h5>
+                {% elif page_obj.paginator.count == 1 %}
+                    <h5>1 available stream is listed below.</h5>
+                {% else %}
+                    <h5>{{ page_obj.paginator.count }} available streams are listed below (showing {{ page_obj.start_index }} to {{ page_obj.end_index }}).</h5>
+                {% endif %}
+            {% endif %}
+            {% if page_obj.paginator.count > 0 %}
+                <h6>Make sure you have <a target="_blank" href="https://nightlies.videolan.org/">VLC 4.0 or later</a> installed.</h6>
+            {% endif %}
+        </div>
+        <!-- Stream cards -->
+        <div class="stream-cards">
+            {% for stream in page_obj %}
+                {% include "components/stream_card.html" %}
+            {% endfor %}
+        </div>
+        <!-- Pages -->
+        {% if page_obj.paginator.count > 0 %}
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        {% if query %}
+                            <a class="page-link" href="?query={{ query }}&page=1">First</a>
+                        {% elif active_category %}
+                            <a class="page-link" href="?category={{ active_category }}&page=1">First</a>
+                        {% else %}
+                            <a class="page-link" href="?page=1">First</a>
+                        {% endif %}
+                    </li>
+                    <li class="page-item">
+                        {% if query %}
+                            <a class="page-link" href="?query={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                        {% elif active_category %}
+                            <a class="page-link" href="?category={{ active_category }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                        {% else %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        {% endif %}
+                    </li>
+                {% endif %}
+                <li class="page-item active">
+                  <a class="page-link" href="#">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a>
+                </li>
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        {% if query %}
+                            <a class="page-link" href="?query={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
+                        {% elif active_category %}
+                            <a class="page-link" href="?category={{ active_category }}&page={{ page_obj.next_page_number }}">Next</a>
+                        {% else %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        {% endif %}
+                    </li>
+                    <li class="page-item">
+                        {% if query %}
+                            <a class="page-link" href="?query={{ query }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                        {% elif active_category %}
+                            <a class="page-link" href="?category={{ active_category }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+                        {% else %}
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                        {% endif %}
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,224 @@
+.stream-cards {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+}
+
+.stream-cards .stream-card-header {
+    position: relative;
+    display: flex;
+    margin: 15px;
+    width: 350px;
+    height: 200px;
+    overflow: hidden;
+    background: #01785e;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.8);
+    transform-origin: center top;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+    transition: 0.3s;
+}
+
+.stream-cards .stream-card-header a {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    text-decoration: none; /* No underlines on the link */
+    z-index: 20; /* Places the link above everything else in the div */
+    background-color: #FFF; /* Fix to make div clickable in IE */
+    opacity: 0; /* Fix to make div clickable in IE */
+    filter: alpha(opacity=1); /* Fix to make div clickable in IE */
+}
+
+.stream-cards .stream-card-header .thumbnail {
+    width: 100%;
+    min-height: 100%;
+}
+
+.stream-cards .stream-card-header .fallback-thumbnail {
+    width: 128px;
+    margin: auto;
+}
+
+.stream-cards .stream-card-header:after {
+    position: absolute;
+    content: '';
+    z-index: 10;
+    width: 200%;
+    height: 100%;
+    top: -90%;
+    left: -20px;
+    opacity: 0.1;
+    transform: rotate(45deg);
+    background: linear-gradient(to top, transparent, #fff 15%, rgba(255,255,255,0.5));
+    transition: 0.3s;
+}
+
+.stream-cards .stream-card-header:hover {
+  box-shadow: 0 8px 16px 3px rgba(0,0,0,0.6);
+  transform: translateY(-3px) scale(1.05) rotateX(15deg);
+}
+
+.stream-cards .stream-card-header:hover:after {
+  transform: rotate(25deg);
+  top: -40%;
+  opacity: 0.15;
+}
+
+.stream-cards .stream-card-body {
+    width: 350px;
+    margin: 10px 15px;
+}
+
+.categories {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.category-tag {
+    color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.05);
+    margin: 2px 2px 2px 0;
+    padding: 0.03rem 0.7rem;
+    border-radius: 9000px;
+}
+
+.category-tag-selected {
+    color: white;
+    background-color: rgba(0,0,0,0.3);
+    margin: 2px 2px 2px 0;
+    padding: 0.03rem 0.7rem;
+    border-radius: 9000px;
+}
+
+.category-tag:hover {
+    color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.1);
+}
+
+.pagination {
+    justify-content: center;
+    margin: 15px;
+}
+
+.page-link {
+    height: 100%;
+    color: #01785e;
+    background-color: white;
+    border: 2px solid #01785e;
+    transition: 0.3s;
+}
+
+.page-link:hover {
+    color: white;
+    background-color: #01785e;
+    border: 2px solid #01785e;
+}
+
+.page-link:focus {
+    box-shadow: none;
+}
+
+.page-item.active .page-link {
+    color: white;
+    background-color: #01785e;
+    border: 2px solid #01785e;
+}
+
+.responsive-image {
+    width: 100%;
+    height: auto;
+}
+
+.text-box {
+    margin: 20px 5px;
+    padding: 10px;
+    box-shadow: 0 0 50px -10px rgb(0 0 0 / 30%);
+}
+
+.detail-margin {
+    margin: 10px 5px;
+}
+
+.detail-padding {
+    padding: 10px 5px;
+}
+
+.detail-button {
+    position: relative;
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    color: #01785e;
+    background-color: white;
+    border: 2px solid #01785e;
+    transition: .4s ease-out;
+    /* "to left" / "to right" - affects initial color */
+    /*
+    background: linear-gradient(to left, white 50%, #01785e 50%) right;
+    background-size: 200%;
+    transition: .4s ease-out;
+     */
+}
+
+.detail-button:hover {
+    color: white;
+    background-color: #01785e;
+    border: 2px solid #01785e;
+    /*
+    background-position: left;
+     */
+}
+
+.invisible-a {
+    color: inherit;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.invisible-a:hover {
+    color: inherit;
+    text-decoration: none;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.broken-btn {
+    min-width: 40%;
+    max-width: 50%;
+}
+
+.vote {
+    color: #01785e;
+    float: right;
+    margin-right: 6px;
+}
+
+.vote:hover {
+    color: #01785ed5;
+    text-decoration: none;
+}
+
+/* Class frame, which makes the horizontal scrollbars of an html element always visible! */
+.frame::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.frame::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+.frame::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.frame::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 8px;
+}

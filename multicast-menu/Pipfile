@@ -1,0 +1,28 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+dj-database-url = "~=2.2.0"
+celery = "~=5.4.0" 
+cryptography = "~=35.0.0"
+django = "~=3.2.14"
+django-cors-headers = "~=3.13.0"
+djangorestframework = "~=3.13.1"
+gunicorn = "~=20.1.0"
+ipwhois = "~=1.2.0"
+psutil = "~=5.8.0"
+psycopg2-binary = "~=2.9.3"
+redis = "~=4.0.1"
+requests = "~=2.26.0"
+scapy = "~=2.4.5"
+whitenoise = "~=6.7.0"
+importlib-metadata = "~=7.1.0"
+python-vlc = "*"
+pillow = "*"
+boto3 = "~=1.26.142"
+django-storages = "~=1.13.2"
+
+[pipenv]
+allow_prereleases = true

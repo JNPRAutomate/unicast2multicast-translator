@@ -1,0 +1,50 @@
+{% load static %}
+
+<article>
+    <figure class="stream-card-header">
+        <a href="{% url 'view:detail' stream.id %}"></a>
+        {% if stream.thumbnail %}
+            <img src={{ stream.thumbnail.url }} alt="" class="thumbnail">
+        {% else %}
+            <img src="{% static 'img/svg/image-fill.svg' %}" class="fallback-thumbnail">
+        {% endif %}
+    </figure>
+    <div class="stream-card-body">
+        <a href="{% url 'view:detail' stream.id %}" class="invisible-a">
+            <strong style="display: block">
+                {{ stream.get_description }}
+            </strong>
+        </a>
+        <div>
+            {{ stream.source_name }}
+        </div>
+        <div class="categories">
+            {% for category in stream.categories.all %}
+                <a href="{% url 'view:index' %}?category={{ category.slug }}" style="color: inherit; text-decoration: none;">
+                    <span class="category-tag">
+                        {{ category.name }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+        <div class="categories">
+            {% if stream.trending_stream and stream.trending_stream.ranking <= TRENDING_STREAM_MAX_VISIBLE_SIZE %}
+                <a href="{% url 'view:trending_index' %}" style="color: inherit; text-decoration: none;">
+                    <span class="category-tag" style="color: white; background-color: #f39c12; padding: 0.1rem 0.5rem;">
+                        Trending #{{ stream.trending_stream.ranking }}
+                    </span>
+                </a>
+            {% endif %}
+            {% if stream.editors_choice %}
+                <a href="{% url 'view:editors_choice_index' %}" style="color: inherit; text-decoration: none;">
+                    <span class="category-tag" style="color: white; background-color: #01785e; padding: 0.1rem 0.3rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16" style="margin-bottom: 0.3rem;">
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                        </svg>
+                        Editors' Choice
+                    </span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</article>

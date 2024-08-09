@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block main %}
+    <div class="p-4 shadow left-div" style="max-width: 800px; margin: auto;">
+        <h1 style="text-align: center; padding: 15px 0; color: #01785e;">Multicast Menu</h1>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16" style="display: block; width: 128px; margin: auto; padding-bottom: 15px;  color: #01785e;">
+            <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+            <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+        </svg>
+        <!-- Form -->
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input class="btn mm-btn" type="submit" value="Register"/>
+        </form>
+    </div>
+{% endblock %}

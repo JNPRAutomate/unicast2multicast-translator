@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/view.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="center-div">
+        <h2>Liked Streams</h2>
+        <h6>The following list contains every streams on MulticastMenu, which you have liked.</h6>
+    </div>
+    <div class="stream-cards">
+        {% for stream in stream_list %}
+            {% include "components/stream_card.html" %}
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+celerybeat*
+
+db.sqlite3
+
+dump.rdb
+
+multicast/media/
+
+__pycache__/
+*.pyc
+
+output.txt
+
+secret.py
+
+serve/

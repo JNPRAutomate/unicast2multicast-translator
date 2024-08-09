@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block main %}
+    <div class="p-4 shadow left-div" style="max-width: 800px; margin: auto;">
+        <h5 style="padding: 15px 0;">Upload the video file you wish to stream.</h5>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label>{{ field.label }}:</label> {{ field }}
+                </div>
+                {{ field.errors }}
+            {% endfor %}
+            <input class="btn mm-btn" type="submit" value="Submit">
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,126 @@
+.search-input-field {
+    padding: 0.5rem 1rem;
+    color: white;
+    background-color: rgba(0,0,0,0.2);
+    border: 2px solid rgba(0,0,0,0.02);
+    border-radius: 5px 0 0 5px;
+    transition: border 0.1s ease-in,background-color 0.1s ease-in;
+}
+
+.search-input-field:hover {
+    border: 2px solid rgba(0,0,0,0.3);
+}
+
+/*
+ *  Change the color of the of the placeholder text in the search input field.
+ */
+.search-input-field::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #ecf0f1;
+  opacity: 1; /* Firefox */
+}
+
+.search-input-field:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #ecf0f1;
+}
+
+.search-input-field::-ms-input-placeholder { /* Microsoft Edge */
+  color: #ecf0f1;
+}
+
+.search-button {
+    color: white;
+    background-color: rgba(0,0,0,0.1);
+    margin-left: 2px;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0 5px 5px 0;
+}
+
+.search-button:hover {
+    background-color: rgba(0,0,0,0.2);
+}
+
+.navigation-icon {
+    width: 24px;
+    height: 24px;
+    padding-bottom: 2px;
+    margin-right: 2px;
+}
+
+.nav-item {
+    flex-shrink: 0;
+}
+
+@media (min-width: 992px) {
+    .dropdown:hover .dropdown-menu {
+        display: block;
+        margin: 0;
+    }
+
+    .dropdown-menu::before {
+        border-bottom: 12px solid rgba(0, 0, 0, 0.2);
+        border-left: 12px solid rgba(0, 0, 0, 0);
+        border-right: 12px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        left: 80px;
+        position: absolute;
+        top: -11px;
+    }
+
+    .dropdown-menu::after {
+        border-bottom: 11px solid #FFFFFF;
+        border-left: 12px solid rgba(0, 0, 0, 0);
+        border-right: 12px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        left: 80px;
+        position: absolute;
+        top: -10px;
+    }
+}
+
+.dropdown-menu {
+    padding: 1rem 0;
+}
+
+.dropdown-item {
+    padding: .5rem 1.5rem;
+    color: #01785e;
+}
+
+.dropdown-item:active {
+    background-color: #01785e;
+    color: white;
+}
+
+.wrapper {
+    padding: 15px;
+}
+
+.left-div {
+    text-align: left;
+}
+
+.center-div {
+    text-align: center;
+}
+
+.errorlist {
+    list-style-type: none;
+    color: #ac0202;
+}
+
+.mm-btn {
+    margin: 5px;
+    color: #01785e;
+    background-color: white;
+    border: 2px solid #01785e;
+    transition: .4s ease-out;
+}
+
+.mm-btn:hover {
+    color: white;
+    background-color: #01785e;
+    border: 2px solid #01785e;
+}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block main %}
+    <div class="left-div">
+        <h2>My Streams</h2>
+        <hr>
+        <h4>Streams Reported Manually</h4>
+        <div class="row">
+            {% for stream in manual_streams %}
+                <div class="col-lg-8 col-md-9 col-sm-12">
+                    <p style="margin-top:10px;">{{ stream }}{% if stream.manual.error_msg %}- {{ stream.manual.error_msg }}{% endif %}</p>
+                </div>
+                <div class="col-lg-4 col-md-3 col-sm-12">
+                    {% if stream.manual.verified %}
+                        <a href="{% url 'manage:edit' stream.id %}"><button type="button" class="btn mm-btn broken-btn">Edit Stream Info</button></a>
+                    {% elif stream.manual.error_msg %}
+                        <a href="{% url 'manage:retry_verification' stream.id %}">Retry Verification</a>
+                    {% endif %}
+                    <a href="{% url 'manage:remove' stream.id %}"><button type="button" class="btn mm-btn broken-btn">Remove Stream</button></a>
+                </div>
+                <div class="col-12" style="height:30px;"></div>
+            {% endfor %}
+        </div>
+        <br>
+        <h4>Streams Actively Being Sent to Translation Server</h4>
+        <div class="row">
+            {% for stream in upload_streams %}
+                <div class="col-lg-8 col-md-9 col-sm-12">
+                    <p style="margin-top:10px;">{{ stream }}{% if not stream.upload.matched %} - Inactive, waiting for response from translator{% endif %}</p>
+                </div>
+                <div class="col-lg-4 col-md-3 col-sm-12">
+                    <a href="{% url 'manage:edit' stream.id %}"><button type="button" class="btn mm-btn broken-btn">Edit Stream Info</button></a>
+                    <a href="{% url 'manage:remove' stream.id %}"><button type="button" class="btn mm-btn broken-btn">Remove Stream</button></a>
+                </div>
+                <div class="col-12" style="height:30px;"></div>
+            {% endfor %}
+        </div>
+        <br>
+    </div>
+{% endblock %}
