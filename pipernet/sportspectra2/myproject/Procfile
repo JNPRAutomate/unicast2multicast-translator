@@ -1,1 +1,1 @@
-web: gunicorn pipernet.sportspectra2.myproject.wsgi --log-file -
+web: gunicorn myproject.wsgi --log-file -
