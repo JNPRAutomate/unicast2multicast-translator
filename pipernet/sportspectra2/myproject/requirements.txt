@@ -3,3 +3,4 @@ gunicorn
 dj-database-url
 whitenoise
 djangorestframework
+django-cors-headers
