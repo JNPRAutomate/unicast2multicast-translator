@@ -64,4 +64,5 @@ Stretch Goals:
 
 References
 
-To add more stuff here
+Documentation and Useful Commands:
+- https://docs.google.com/document/d/19hl0_pTD_mjOj-9wu3Or2F_c1LYq4frm9R-9Nj8s-EQ/edit?usp=sharing
