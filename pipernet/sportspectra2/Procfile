@@ -1,0 +1,3 @@
+web: gunicorn myproject.wsgi --log-file -
+release: python myproject/manage.py migrate
+static: npm install -g http-server && http-server build/web/ -p $PORT
