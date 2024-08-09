@@ -65,7 +65,7 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
   Future<void> _startWebStream() async {
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.0.54:8000/start_web_stream/'),
+        Uri.parse('https://pipernet-1549dd3de864.herokuapp.com/start_web_stream/'),
         body: {
           'source_ip': '162.250.138.12', // Actual source IP
           'udp_port': '9001',            // Actual UDP port
@@ -160,7 +160,7 @@ class _BroadcastScreenState extends State<BroadcastScreen> {
   Future<void> _stopWebStream() async {
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.0.54:8000/stop_web_stream/'),
+        Uri.parse('https://pipernet-1549dd3de864.herokuapp.com/stop_web_stream/'),
       );
       if (response.statusCode == 200) {
         print('Streaming stopped successfully');

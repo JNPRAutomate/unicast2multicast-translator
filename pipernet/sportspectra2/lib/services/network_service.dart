@@ -9,8 +9,11 @@ class NetworkService {
   // static const String baseUrl = 'http://127.0.0.1:8000/api';
 
   // isabelle's home: regent terrace
-  static const String baseUrl = 'http://10.0.0.54:8000/api';
+  // static const String baseUrl = 'http://10.0.0.54:8000/api';
 
+// heroku
+  static const String baseUrl = 'https://pipernet-1549dd3de864.herokuapp.com/api';
+  
   //juniper networks office herndon
   // static const String baseUrl = 'http://172.25.80.17:8000/api';
 

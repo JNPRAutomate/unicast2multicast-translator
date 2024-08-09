@@ -99,7 +99,7 @@ class _VideoUrlScreenState extends State<VideoUrlScreen> {
     try {
       Dio dio = Dio();
       final response = await dio.post(
-        'http://10.0.0.54:8000/stream_video_url/',
+        'https://pipernet-1549dd3de864.herokuapp.com/stream_video_url/',
         data: {
           'video_url': videoUrl,
           'source_ip': ip,

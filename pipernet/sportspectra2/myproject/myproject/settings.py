@@ -29,12 +29,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'your-default-secret-key')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['*', '10.0.0.54', 'localhost',
-                 '127.0.0.1', '172.25.80.17', '192.168.2.110']
+                 '127.0.0.1', '172.25.80.17', '192.168.2.110', 'pipernet-1549dd3de864.herokuapp.com']
 
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '..', '..', 'build', 'web'),
 ]
@@ -72,7 +68,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:61638",  # Add your Flutter app's origin
     "http://127.0.0.1:61638",
     "http://172.25.80.17:8000",
-    "http://192.168.2.110:8000"
+    "http://192.168.2.110:8000",
+    "https://pipernet-1549dd3de864.herokuapp.com/"
+
 ]
 
 ROOT_URLCONF = 'myproject.urls'
