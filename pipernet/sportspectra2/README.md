@@ -4,6 +4,8 @@
 
 Goals of this project is to develop a mobile app that makes it very simple for anyone to source and receive multicast video using the TreeDN architecture. At a high level, a sourcing user will open app and send video from device camera as a unicast data stream to a Multicast Translator sitting in a TreeDN network. The Translator receives a video stream and translates the destination addresses to a multicast address. Then the stream can be received natively by receivers connected natively to the TreeDN network (OnNet receivers), or via AMT by receivers on unicast-only networks (OffNet Receivers). Receiving users will be able to select active multicast streams and view, ideally through the browser, or via some other video app. Ideal use case for this app would be niche sports, along with nature cams.
 
+In addition to the Mobile App for iOS/Android devices, should have a web-based option for Mac/Windows users who can source/receive through the browser.  Ideally, a single web-based option that could be used in the browser of iOS/Android devices as well as PCs (ie, no mobile app needed), but this may not a very user-friendly UI option for mobile devices.
+
 # Low Level Description
 
 ## Multicast Translator Details
@@ -56,17 +58,17 @@ When sourcing user wants to send, user should have to specify some sort of descr
 
 Receiver will see all streams listed (with afore-mentioned UI to cleanly, and intuitively find a desired stream). After selecting a stream, receiver will be able to view the video. The ideal tool for viewing the video will be a browser, but browsers prohibit UDP traffic. This leaves several options:
 
-- Leveraging **DVB-MABR/MAUD/OpenCasting** approaches (and what Lauren built in her multicast-to-the-browser implementation), specifically for the way they use **L interface** to allow multicast to be received in the browser (or any existing unicast playback app). Ideally, the Multicast GW (which would also be an AMT GW) could reside in the end host with the browser (ie, the L interface would be internal to the end host).  See those specs for details: 
-  - https://www.etsi.org/deliver/etsi_ts/103700_103799/103769/01.01.01_60/ts_103769v010101p.pdf 
-  - https://www.ibc.org/technical-papers/ibc2023-tech-papers-multicast-assisted-unicast-delivery/10235.article
-  - https://youtu.be/yp8vRmkqHho?t=3082
-  - https://www.youtube.com/watch?v=5Lgpgq0Aj88&t=4921s 
-  - https://datatracker.ietf.org/meeting/115/materials/slides-115-mboned-amt-to-the-browser-in-the-multicast-menu-00
+* Leveraging **DVB-MABR/MAUD/OpenCasting** approaches (and what Lauren built in her multicast-to-the-browser implementation), specifically for the way they use **L interface** to allow multicast to be received in the browser (or any existing unicast playback app). Ideally, the Multicast GW (which would also be an AMT GW) could reside in the end host with the browser (ie, the L interface would be internal to the end host).  See those specs for details: 
+  * https://www.etsi.org/deliver/etsi_ts/103700_103799/103769/01.01.01_60/ts_103769v010101p.pdf 
+  * https://www.ibc.org/technical-papers/ibc2023-tech-papers-multicast-assisted-unicast-delivery/10235.article
+  * https://youtu.be/yp8vRmkqHho?t=3082
+  * https://www.youtube.com/watch?v=5Lgpgq0Aj88&t=4921s 
+  * https://datatracker.ietf.org/meeting/115/materials/slides-115-mboned-amt-to-the-browser-in-the-multicast-menu-00
 
-- use a video app that supports multicast. VLC4 is one option, but very clunky and fragile.  
+* use a video app that supports multicast. VLC4 is one option, but very clunky and fragile.  
 
-- try to get Multicast Extensions to QUIC to work in a browser. May require dev of chromium:
-  - https://datatracker.ietf.org/doc/draft-jholland-quic-multicast/
+* try to get Multicast Extensions to QUIC to work in a browser. May require dev of chromium:
+  * https://datatracker.ietf.org/doc/draft-jholland-quic-multicast/
 
 ## Diagnostics
 
@@ -74,17 +76,17 @@ Should have a rich set of details for nerds available, as well as diagnostics fo
 
 ## Platform Support
 
-- should work on iOS devices (iPhone, iPad), Android devices, Amazon Firestick, MacOS, and Windows. Roku player is a stretch goal
+* should work on iOS devices (iPhone, iPad), Android devices, Amazon Firestick, MacOS, and Windows. Roku player is a stretch goal
 
 ## Use cases
 
-- niche sports, nature cams, distance learning for underserved communities
+* niche sports, nature cams, distance learning for underserved communities
 
-- high bitrate streams- Augmented Reality (AR) livestreaming
+* high bitrate streams- Augmented Reality (AR) livestreaming
 
-- Stretch goal: leveraging blockchain for tokenization/incentivizing AMT relay deployment (see Helium, Pollen)
+* Stretch goal: leveraging blockchain for tokenization/incentivizing AMT relay deployment (see Helium, Pollen)
 
 # References
 
 Documentation and Useful Commands:
-- https://docs.google.com/document/d/19hl0_pTD_mjOj-9wu3Or2F_c1LYq4frm9R-9Nj8s-EQ/edit?usp=sharing
+* https://docs.google.com/document/d/19hl0_pTD_mjOj-9wu3Or2F_c1LYq4frm9R-9Nj8s-EQ/edit?usp=sharing
